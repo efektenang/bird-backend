@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "moduleResolution": "node",
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "incremental": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@routers/*": ["src/routers/*"],
+      "@fx-routers": ["src/fx-routers"],
+      "@utilities/*": ["./src/utilities/*"],
+      "@main/*": ["src/main/*"],
+      "@app-module": ["src/app.module.ts"],
+      "@test-stubs/*": ["src/tests/stubs/*"],
+      "@middlewares": ["src/middlewares"],
+      "@mock-data/*": ["src/mock-data/*"],
+      "@dtos/*": ["src/common/dtos/*"],
+      "@interfaces/*": ["src/common/interfaces/*"],
+      "@schemas/*": ["src/common/schemas/*"],
+    }
+  },
+  "include": ["**/*.ts", "**/***/*.d.ts", "src/main/gateway-services"],
+  "exclude": ["node_modules", "dist"]
+}

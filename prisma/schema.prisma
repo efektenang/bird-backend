@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id         String      @id
+  user_name  String
+  full_name  String?
+  email      String      @unique
+  password   String
+  phone      String?
+  role_user  String
+  created_by String
+  created_at DateTime    @default(now())
+  updated_by String?
+  updated_at DateTime?
+  workspaces workspace[]
+}
+
+model workspace {
+  id         Int       @id @default(autoincrement())
+  title      String
+  created_by String
+  created_at DateTime  @default(now())
+  updated_by String?
+  updated_at DateTime?
+  user       user?     @relation(fields: [owner_id], references: [id])
+  owner_id   String?
+  members    member[]
+  teams      team[]
+  projects   project[]
+}
+
+model team {
+  id           Int        @id @default(autoincrement())
+  title        String
+  created_by   String
+  created_at   DateTime   @default(now())
+  updated_by   String?
+  updated_at   DateTime?
+  members      member[]
+  workspace    workspace? @relation(fields: [workspace_id], references: [id])
+  workspace_id Int?
+}
+
+model member {
+  id           Int        @id @default(autoincrement())
+  points       Int
+  rule         String
+  created_by   String
+  created_at   DateTime   @default(now())
+  updated_by   String?
+  updated_at   DateTime?
+  workspace    workspace? @relation(fields: [workspace_id], references: [id])
+  workspace_id Int?
+  team         team?      @relation(fields: [team_id], references: [id])
+  team_id      Int?
+}
+
+model project {
+  id           Int           @id @default(autoincrement())
+  title        String
+  description  String?
+  bg_color     String?
+  created_by   String
+  created_at   DateTime      @default(now())
+  updated_by   String?
+  updated_at   DateTime?
+  story_points story_point[]
+  workspace    workspace?    @relation(fields: [workspace_id], references: [id])
+  workspace_id Int?
+}
+
+model story_point {
+  id           Int           @id @default(autoincrement())
+  point_name   String
+  max_point    Int
+  created_by   String
+  created_at   DateTime      @default(now())
+  updated_by   String?
+  updated_at   DateTime?
+  sp_templates sp_template[]
+  project      project?      @relation(fields: [project_id], references: [id])
+  project_id   Int?
+}
+
+model sp_template {
+  id             Int          @id @default(autoincrement())
+  status         String
+  duration       Int
+  decreatement   Int
+  created_by     String
+  created_at     DateTime     @default(now())
+  updated_by     String?
+  updated_at     DateTime?
+  story_point    story_point? @relation(fields: [story_point_id], references: [id])
+  story_point_id Int?
+}
+
+model table {
+  id Int @id @default(autoincrement())
+
+  created_by String
+  created_at DateTime  @default(now())
+  updated_by String?
+  updated_at DateTime?
+}
