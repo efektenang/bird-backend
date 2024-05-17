@@ -8,7 +8,7 @@ export const RouteUser: FX_ROUTERS.TRouterConfigs = {
       {
         code: "GET-USER",
         name: "Get data users",
-        auth: true,
+        auth: false,
       },
       {
         suffix: ":userId",

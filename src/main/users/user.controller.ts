@@ -25,8 +25,6 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @UseGuards(RolesGuard)
-  @Roles(Role.Server)
   async getAllUser(@Res() res: Response) {
     return this.userService
       .findAllUsers()

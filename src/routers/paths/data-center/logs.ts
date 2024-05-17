@@ -1,4 +1,4 @@
-import { LogModule } from "@main/logs/log.module";
+import { LogModule } from "@main/log/log.module";
 
 export const RouteLogs: FX_ROUTERS.TRouterConfigs = {
   path: "logs",

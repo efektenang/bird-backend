@@ -14,18 +14,20 @@ datasource db {
 }
 
 model user {
-  id         String      @id
-  user_name  String
-  full_name  String?
-  email      String      @unique
-  password   String
-  phone      String?
-  role_user  String
-  created_by String
-  created_at DateTime    @default(now())
-  updated_by String?
-  updated_at DateTime?
-  workspaces workspace[]
+  id            String          @id
+  user_name     String
+  full_name     String?
+  email         String          @unique
+  password      String
+  phone         String?
+  role_user     String
+  created_by    String
+  created_at    DateTime        @default(now())
+  updated_by    String?
+  updated_at    DateTime?
+  workspaces    workspace[]
+  comments      task_comment[]
+  comment_reply comment_reply[]
 }
 
 model workspace {
@@ -55,17 +57,19 @@ model team {
 }
 
 model member {
-  id           Int        @id @default(autoincrement())
-  points       Int
-  rule         String
-  created_by   String
-  created_at   DateTime   @default(now())
-  updated_by   String?
-  updated_at   DateTime?
-  workspace    workspace? @relation(fields: [workspace_id], references: [id])
-  workspace_id Int?
-  team         team?      @relation(fields: [team_id], references: [id])
-  team_id      Int?
+  id              Int               @id @default(autoincrement())
+  points          Int
+  rule            String
+  created_by      String
+  created_at      DateTime          @default(now())
+  updated_by      String?
+  updated_at      DateTime?
+  workspace       workspace?        @relation(fields: [workspace_id], references: [id])
+  workspace_id    Int?
+  team            team?             @relation(fields: [team_id], references: [id])
+  team_id         Int?
+  task_assignee   task_assignee[]
+  checkbox_member checkbox_member[]
 }
 
 model project {
@@ -78,21 +82,23 @@ model project {
   updated_by   String?
   updated_at   DateTime?
   story_points story_point[]
+  boards       board[]
   workspace    workspace?    @relation(fields: [workspace_id], references: [id])
   workspace_id Int?
 }
 
 model story_point {
-  id           Int           @id @default(autoincrement())
-  point_name   String
-  max_point    Int
-  created_by   String
-  created_at   DateTime      @default(now())
-  updated_by   String?
-  updated_at   DateTime?
-  sp_templates sp_template[]
-  project      project?      @relation(fields: [project_id], references: [id])
-  project_id   Int?
+  id               Int                @id @default(autoincrement())
+  point_name       String
+  max_point        Int
+  created_by       String
+  created_at       DateTime           @default(now())
+  updated_by       String?
+  updated_at       DateTime?
+  sp_templates     sp_template[]
+  project          project?           @relation(fields: [project_id], references: [id])
+  project_id       Int?
+  task_story_point task_story_point[]
 }
 
 model sp_template {
@@ -108,11 +114,173 @@ model sp_template {
   story_point_id Int?
 }
 
-model table {
-  id Int @id @default(autoincrement())
+model board {
+  id          Int       @id @default(autoincrement())
+  board_title String
+  color       String?
+  task_limit  Int?
+  created_by  String
+  created_at  DateTime  @default(now())
+  updated_by  String?
+  updated_at  DateTime?
+  tasks       task[]
+  project     project?  @relation(fields: [project_id], references: [id])
+  project_id  Int?
+}
 
+model task {
+  id               Int                @id @default(autoincrement())
+  task_title       String
+  description      String?
+  status           String
+  on_hold          Int?
+  created_by       String
+  created_at       DateTime           @default(now())
+  updated_by       String?
+  updated_at       DateTime?
+  task_attachments task_attachment[]
+  task_comments    task_comment[]
+  task_label       task_label[]
+  board            board?             @relation(fields: [board_id], references: [id])
+  board_id         Int?
+  task_url         task_url[]
+  task_date        task_date[]
+  task_assignee    task_assignee[]
+  task_checkbox    task_checkbox[]
+  task_story_point task_story_point[]
+}
+
+model task_attachment {
+  id                 Int                  @id @default(autoincrement())
+  label              String?
+  url                String
+  created_by         String
+  created_at         DateTime             @default(now())
+  updated_by         String?
+  updated_at         DateTime?
+  task               task?                @relation(fields: [task_id], references: [id])
+  task_id            Int?
+  comment_attachment comment_attachment[]
+}
+
+model task_comment {
+  id                 Int                  @id @default(autoincrement())
+  label              String?
+  url                String
+  created_by         String
+  created_at         DateTime             @default(now())
+  updated_by         String?
+  updated_at         DateTime?
+  reply              comment_reply[]
+  task               task?                @relation(fields: [task_id], references: [id])
+  task_id            Int?
+  user               user?                @relation(fields: [user_id], references: [id])
+  user_id            String?
+  comment_attachment comment_attachment[]
+}
+
+model comment_reply {
+  id           Int           @id @default(autoincrement())
+  label        String?
+  url          String
+  created_by   String
+  created_at   DateTime      @default(now())
+  updated_by   String?
+  updated_at   DateTime?
+  user         user?         @relation(fields: [user_id], references: [id])
+  user_id      String?
+  task_comment task_comment? @relation(fields: [comment_id], references: [id])
+  comment_id   Int?
+}
+
+model comment_attachment {
+  id              Int              @id @default(autoincrement())
+  task_comment    task_comment?    @relation(fields: [comment_id], references: [id])
+  comment_id      Int?
+  task_attachment task_attachment? @relation(fields: [attachment_id], references: [id])
+  attachment_id   Int?
+  created_by      String
+  created_at      DateTime         @default(now())
+  updated_by      String?
+  updated_at      DateTime?
+}
+
+model task_label {
+  id          Int       @id @default(autoincrement())
+  label_color String?
+  created_by  String
+  created_at  DateTime  @default(now())
+  updated_by  String?
+  updated_at  DateTime?
+  task        task?     @relation(fields: [task_id], references: [id])
+  task_id     Int?
+}
+
+model task_url {
+  id         Int       @id @default(autoincrement())
+  label      String?
+  url        String
   created_by String
   created_at DateTime  @default(now())
   updated_by String?
   updated_at DateTime?
+  task       task?     @relation(fields: [task_id], references: [id])
+  task_id    Int?
+}
+
+model task_date {
+  id         Int       @id @default(autoincrement())
+  start_date DateTime
+  due_date   DateTime?
+  reminder   Int?
+  url        String
+  created_by String
+  created_at DateTime  @default(now())
+  updated_by String?
+  updated_at DateTime?
+  task       task?     @relation(fields: [task_id], references: [id])
+  task_id    Int?
+}
+
+model task_assignee {
+  id         Int       @id @default(autoincrement())
+  created_by String
+  created_at DateTime  @default(now())
+  updated_by String?
+  updated_at DateTime?
+  task       task?     @relation(fields: [task_id], references: [id])
+  task_id    Int?
+  member     member?   @relation(fields: [member_id], references: [id])
+  member_id  Int?
+}
+
+model task_checkbox {
+  id              Int               @id @default(autoincrement())
+  label           String
+  start_date      DateTime?
+  due_date        DateTime?
+  status          String
+  created_by      String
+  created_at      DateTime          @default(now())
+  updated_by      String?
+  updated_at      DateTime?
+  task            task?             @relation(fields: [task_id], references: [id])
+  task_id         Int?
+  checkbox_member checkbox_member[]
+}
+
+model checkbox_member {
+  id               Int            @id @default(autoincrement())
+  member           member?        @relation(fields: [member_id], references: [id])
+  member_id        Int?
+  task_checkbox    task_checkbox? @relation(fields: [task_checkbox_id], references: [id])
+  task_checkbox_id Int?
+}
+
+model task_story_point {
+  id             Int          @id @default(autoincrement())
+  task           task?        @relation(fields: [task_id], references: [id])
+  task_id        Int?
+  story_point    story_point? @relation(fields: [story_point_id], references: [id])
+  story_point_id Int?
 }

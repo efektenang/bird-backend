@@ -35,7 +35,7 @@ export class UserService {
   async findUserIfExists(userId: string): Promise<IUsers> {
     try {
       const currentUser = await this.prisma.user.findFirst({
-        where: { user_id: userId },
+        where: { id: userId },
       });
 
       if (!currentUser) throw new NotFoundException("User not found!");
@@ -50,7 +50,7 @@ export class UserService {
     try {
       const res = await this.prisma.user.findMany({
         select: {
-          user_id: true,
+          id: true,
           user_name: true,
           full_name: true,
           email: true,
@@ -83,7 +83,7 @@ export class UserService {
       license = license.match(/.{2,6}/g).join("-");
 
       const token: string = await this.jwtCustom.generateToken({
-        user_id: exists.user_id,
+        user_id: exists.id,
         type: exists.role_user,
       });
 
@@ -99,7 +99,7 @@ export class UserService {
       const saveUser = await this.prisma.user.create({
         data: {
           ...data,
-          user_id: uuidv4(),
+          id: uuidv4(),
           password: [hashPassword.hash, hashPassword.salt].join(" "),
           created_by: data.user_name,
         },
@@ -122,7 +122,7 @@ export class UserService {
       if (newEnc.hash !== _hash) throw new Error("Wrong old password!");
 
       await this.prisma.user.update({
-        where: { user_id: userId },
+        where: { id: userId },
         data: {
           password: [encPassword.hash, encPassword.salt].join(" "),
           updated_by: currentUser.user_name,
@@ -139,7 +139,7 @@ export class UserService {
       const user = await this.findUserIfExists(userId);
 
       const updateUser = await this.prisma.user.update({
-        where: { user_id: userId },
+        where: { id: userId },
         data: {
           ...data,
           updated_by: user.user_name,

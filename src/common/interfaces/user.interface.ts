@@ -1,5 +1,5 @@
 interface _IUsers {
-  user_id: string;
+  id: string;
   user_name: string;
   full_name: string;
   email: string;

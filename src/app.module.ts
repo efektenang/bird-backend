@@ -3,7 +3,7 @@ import {
   Module,
   NestModule,
 } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import {
   AuthMiddleware,
   InitMiddleware,
@@ -33,7 +33,16 @@ global.__basedir = __dirname;
       auth_pass: process.env.REDIS_PASSWORD || '',
       ttl: 60,
     }),
-    MongooseModule.forRoot(process.env.MONGO_DB),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async () => {
+        return {
+          uri: process.env.MONGO_DB,
+          dbName: process.env.DB_NAME,
+        }
+      }
+    }),
     ...FxRouterModules.register(),
   ],
   controllers: [],
